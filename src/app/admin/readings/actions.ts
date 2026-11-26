@@ -1,6 +1,8 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { after } from "next/server";
+import { sendPendingPushes } from "@/lib/notifications/push";
 import { requireUser } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 
@@ -69,6 +71,7 @@ export async function recordReading(formData: FormData): Promise<RecordReadingRe
     rate_centavos_per_kwh: number;
     amount_centavos: number;
   };
+  after(() => sendPendingPushes().catch(() => null));
   refresh();
   return {
     ok: true,

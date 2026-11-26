@@ -1,6 +1,8 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { after } from "next/server";
+import { sendPendingPushes } from "@/lib/notifications/push";
 import { requireUser } from "@/lib/auth/dal";
 import { getUnpaidCharges } from "@/lib/admin/payments";
 import { allocateChosenFirst, allocatePayment } from "@/lib/billing/balances";
@@ -46,6 +48,7 @@ export async function confirmPayment(_prev: ReviewState, form: FormData): Promis
 
   const receiptNo = await receiptNoForPayment(supabase, paymentId);
   if (receiptNo) await storeReceiptPdf(supabase, receiptNo).catch(() => null);
+  after(() => sendPendingPushes().catch(() => null));
   refresh();
   return { status: "done" };
 }
@@ -60,6 +63,7 @@ export async function rejectPayment(_prev: ReviewState, form: FormData): Promise
     p_reason: reason,
   });
   if (error) return { status: "error", error: "Couldn't reject. It may already be reviewed." };
+  after(() => sendPendingPushes().catch(() => null));
   refresh();
   return { status: "done" };
 }
