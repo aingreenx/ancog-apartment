@@ -31,6 +31,12 @@ export interface DashboardData {
     totalUnpaid: number;
   };
   readingsDue: { tenancyId: string; room: number; tenantName: string; dueDate: string }[];
+  lastJobRun: {
+    runDate: string;
+    finishedAt: string | null;
+    error: string | null;
+    created: number;
+  } | null;
   paymentsToReview: {
     id: string;
     room: number | null;
@@ -58,39 +64,52 @@ export async function getDashboard(): Promise<DashboardData> {
   const [y, m] = today.split("-").map(Number);
   const nextMonthStart = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 10);
 
-  const [roomsRes, staysRes, balancesRes, monthChargesRes, unpaidRes, pendingRes, readingsRes] =
-    await Promise.all([
-      supabase.from("rooms").select("id, number, base_rent_centavos").order("number"),
-      supabase
-        .from("tenancies")
-        .select(
-          "id, room_id, due_day, monthly_rent_centavos, tenant:tenants(first_name, last_name)",
-        )
-        .eq("status", "active"),
-      supabase
-        .from("tenancy_balances")
-        .select(
-          "tenancy_id, owed_centavos, credit_centavos, balance_centavos, overdue_centavos, max_days_overdue",
-        )
-        .eq("status", "active"),
-      supabase
-        .from("charge_balances")
-        .select("type, amount_centavos, paid_centavos")
-        .in("type", ["rent", "electricity"])
-        .neq("status", "void")
-        .gte("due_date", monthStart)
-        .lt("due_date", nextMonthStart),
-      supabase.from("tenancy_balances").select("owed_centavos"),
-      supabase
-        .from("payments")
-        .select(
-          "id, paid_on, amount_centavos, method, reference_no, tenancy:tenancies(room:rooms(number), tenant:tenants(first_name, last_name))",
-        )
-        .eq("status", "pending_review")
-        .is("voided_at", null)
-        .order("created_at"),
-      supabase.from("meter_readings").select("tenancy_id").eq("reading_date", today),
-    ]);
+  const [
+    roomsRes,
+    staysRes,
+    balancesRes,
+    monthChargesRes,
+    unpaidRes,
+    pendingRes,
+    readingsRes,
+    jobRes,
+  ] = await Promise.all([
+    supabase.from("rooms").select("id, number, base_rent_centavos").order("number"),
+    supabase
+      .from("tenancies")
+      .select("id, room_id, due_day, monthly_rent_centavos, tenant:tenants(first_name, last_name)")
+      .eq("status", "active"),
+    supabase
+      .from("tenancy_balances")
+      .select(
+        "tenancy_id, owed_centavos, credit_centavos, balance_centavos, overdue_centavos, max_days_overdue",
+      )
+      .eq("status", "active"),
+    supabase
+      .from("charge_balances")
+      .select("type, amount_centavos, paid_centavos")
+      .in("type", ["rent", "electricity"])
+      .neq("status", "void")
+      .gte("due_date", monthStart)
+      .lt("due_date", nextMonthStart),
+    supabase.from("tenancy_balances").select("owed_centavos"),
+    supabase
+      .from("payments")
+      .select(
+        "id, paid_on, amount_centavos, method, reference_no, tenancy:tenancies(room:rooms(number), tenant:tenants(first_name, last_name))",
+      )
+      .eq("status", "pending_review")
+      .is("voided_at", null)
+      .order("created_at"),
+    supabase.from("meter_readings").select("tenancy_id").eq("reading_date", today),
+    supabase
+      .from("job_runs")
+      .select("run_date, finished_at, error, rent_charges_created, notifications_created")
+      .eq("job", "daily-billing")
+      .order("started_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
 
   const rooms = check(roomsRes, "rooms");
   const stays = check(staysRes, "stays");
@@ -160,6 +179,14 @@ export async function getDashboard(): Promise<DashboardData> {
         dueDate: today,
       }))
       .sort((a, b) => a.room - b.room),
+    lastJobRun: jobRes.data
+      ? {
+          runDate: jobRes.data.run_date,
+          finishedAt: jobRes.data.finished_at,
+          error: jobRes.data.error,
+          created: jobRes.data.rent_charges_created + jobRes.data.notifications_created,
+        }
+      : null,
     paymentsToReview: pending.map((p) => ({
       id: p.id,
       room: p.tenancy?.room?.number ?? null,
