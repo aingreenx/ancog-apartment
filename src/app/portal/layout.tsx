@@ -1,0 +1,53 @@
+import Link from "next/link";
+import { Suspense } from "react";
+import { BottomNav, Icon, TopNav } from "@/components/app-nav";
+import { BELL_ICON, PORTAL_NAV } from "@/components/nav-items";
+import { UserMenu } from "@/components/user-menu";
+
+// Phone-first shell for tenants. Like /admin, it holds no auth logic: every page calls
+// requireUser("tenant") itself.
+export default function PortalLayout({ children }: LayoutProps<"/portal">) {
+  return (
+    <div className="flex flex-1 flex-col">
+      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
+        <div className="mx-auto flex h-14 max-w-3xl items-center gap-4 px-4">
+          <Link href="/portal" className="font-semibold tracking-tight">
+            Ancog Apartment
+          </Link>
+          <nav aria-label="Main" className="hidden flex-1 md:block">
+            <Suspense fallback={null}>
+              <TopNav items={PORTAL_NAV} />
+            </Suspense>
+          </nav>
+          <div className="ml-auto flex items-center gap-1 md:ml-0">
+            {/* Placeholder until notifications (#24). */}
+            <button
+              type="button"
+              disabled
+              aria-label="Notifications (coming soon)"
+              className="rounded-full p-2 text-zinc-500 disabled:cursor-not-allowed"
+            >
+              <Icon d={BELL_ICON} />
+            </button>
+            <Suspense
+              fallback={<span className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-800" />}
+            >
+              <UserMenu />
+            </Suspense>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-24 md:pb-10">{children}</div>
+
+      <nav
+        aria-label="Main"
+        className="fixed inset-x-0 bottom-0 z-10 border-t border-zinc-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden dark:border-zinc-800 dark:bg-zinc-950"
+      >
+        <Suspense fallback={null}>
+          <BottomNav items={PORTAL_NAV} />
+        </Suspense>
+      </nav>
+    </div>
+  );
+}
