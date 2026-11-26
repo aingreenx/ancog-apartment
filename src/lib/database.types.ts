@@ -502,6 +502,9 @@ isOneToOne: false
 "mark_password_changed":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"move_in":
+{ Args: { "p_address": string,"p_advance_centavos": number,"p_deposit_centavos": number,"p_first_name": string,"p_last_name": string,"p_occupants": Json,"p_phone_1": string,"p_phone_2": string,"p_room_number": number,"p_start_date": string,"p_starting_kwh": number,"p_user_id": string,"p_username": string }; Returns: string
+                           },
 "my_tenancy_ids":
 { Args: Record<PropertyKey, never>; Returns: string[]
                            },
