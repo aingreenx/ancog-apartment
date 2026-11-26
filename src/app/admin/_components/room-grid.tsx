@@ -127,12 +127,20 @@ export function RoomGrid({ rooms }: { rooms: RoomCard[] }) {
 
               <div className="mt-auto pt-1 text-sm">
                 {room.stay ? (
-                  <Link
-                    href={`/admin/readings?room=${room.number}`}
-                    className="font-medium underline underline-offset-4"
-                  >
-                    Record reading
-                  </Link>
+                  <span className="flex flex-wrap gap-x-4 gap-y-1">
+                    <Link
+                      href={`/admin/payments?tenancy=${room.stay.tenancyId}`}
+                      className="font-medium underline underline-offset-4"
+                    >
+                      Record payment
+                    </Link>
+                    <Link
+                      href={`/admin/readings?room=${room.number}`}
+                      className="font-medium underline underline-offset-4"
+                    >
+                      Record reading
+                    </Link>
+                  </span>
                 ) : (
                   <Link
                     href={`/admin/move-in?room=${room.number}`}

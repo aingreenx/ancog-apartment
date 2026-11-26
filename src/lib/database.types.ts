@@ -245,14 +245,14 @@ isOneToOne: false
                   ]
                 },"payments": {
                   Row: {
-                    "amount_centavos": number,"created_at": string,"id": string,"method": Database["public"]['Enums']["payment_method"],"paid_on": string,"proof_path": string | null,"reference_no": string | null,"review_note": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"status": Database["public"]['Enums']["payment_status"],"submitted_by": string | null,"tenancy_id": string,"void_reason": string | null,"voided_at": string | null,"voided_by": string | null
+                    "amount_centavos": number,"created_at": string,"id": string,"method": Database["public"]['Enums']["payment_method"],"notes": string | null,"paid_on": string,"proof_path": string | null,"reference_no": string | null,"review_note": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"status": Database["public"]['Enums']["payment_status"],"submitted_by": string | null,"tenancy_id": string,"void_reason": string | null,"voided_at": string | null,"voided_by": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "amount_centavos": number,"created_at"?: string,"id"?: string,"method": Database["public"]['Enums']["payment_method"],"paid_on": string,"proof_path"?: string | null,"reference_no"?: string | null,"review_note"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"submitted_by"?: string | null,"tenancy_id": string,"void_reason"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
+                    "amount_centavos": number,"created_at"?: string,"id"?: string,"method": Database["public"]['Enums']["payment_method"],"notes"?: string | null,"paid_on": string,"proof_path"?: string | null,"reference_no"?: string | null,"review_note"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"submitted_by"?: string | null,"tenancy_id": string,"void_reason"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
                   }
                   Update: {
-                    "amount_centavos"?: number,"created_at"?: string,"id"?: string,"method"?: Database["public"]['Enums']["payment_method"],"paid_on"?: string,"proof_path"?: string | null,"reference_no"?: string | null,"review_note"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"submitted_by"?: string | null,"tenancy_id"?: string,"void_reason"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
+                    "amount_centavos"?: number,"created_at"?: string,"id"?: string,"method"?: Database["public"]['Enums']["payment_method"],"notes"?: string | null,"paid_on"?: string,"proof_path"?: string | null,"reference_no"?: string | null,"review_note"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"submitted_by"?: string | null,"tenancy_id"?: string,"void_reason"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
                   }
                   Relationships: [
                     {
@@ -528,6 +528,12 @@ isOneToOne: false
       } },
 "record_meter_reading":
 { Args: { "p_new_meter_kwh"?: number,"p_photo_path"?: string,"p_reading_date": string,"p_reading_kwh": number,"p_tenancy_id": string }; Returns: Json
+                           },
+"record_payment":
+{ Args: { "p_allocations": Json,"p_amount_centavos": number,"p_method": Database["public"]['Enums']["payment_method"],"p_notes": string,"p_paid_on": string,"p_proof_path": string,"p_reference_no": string,"p_tenancy_id": string }; Returns: string
+                           },
+"void_payment":
+{ Args: { "p_payment_id": string,"p_reason": string }; Returns: undefined
                            }
           }
           Enums: {
