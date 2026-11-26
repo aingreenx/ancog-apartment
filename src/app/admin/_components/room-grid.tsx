@@ -87,7 +87,18 @@ export function RoomGrid({ rooms }: { rooms: RoomCard[] }) {
                   <p className="text-xs font-medium tracking-wide text-zinc-500 uppercase">
                     Room {room.number}
                   </p>
-                  <p className="font-medium">{room.stay ? room.stay.tenantName : "Vacant"}</p>
+                  <p className="font-medium">
+                    {room.stay ? (
+                      <Link
+                        href={`/admin/tenants/${room.stay.tenancyId}`}
+                        className="hover:underline hover:underline-offset-4"
+                      >
+                        {room.stay.tenantName}
+                      </Link>
+                    ) : (
+                      "Vacant"
+                    )}
+                  </p>
                 </div>
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs font-medium ${BADGE[room.status]}`}
