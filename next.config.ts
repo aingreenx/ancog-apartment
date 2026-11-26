@@ -1,7 +1,7 @@
+import { withSerwist } from "@serwist/turbopack";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
@@ -14,4 +14,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Installable app (#27): the service worker is built from src/app/sw.ts and served at
+// /serwist/sw.js by src/app/serwist/[path]/route.ts.
+export default withSerwist(nextConfig);

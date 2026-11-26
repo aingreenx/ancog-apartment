@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { InstallPrompt } from "@/components/install-prompt";
 import { requireUser } from "@/lib/auth/dal";
 import { formatDate, formatPeso } from "@/lib/money";
 import { getMyBalance, getMyBills, getMyStay, todayForPortal } from "@/lib/portal/data";
@@ -117,8 +118,11 @@ async function Home() {
 
 export default function PortalPage() {
   return (
-    <Suspense fallback={<p className="text-sm text-zinc-500">Loading…</p>}>
-      <Home />
-    </Suspense>
+    <div className="flex flex-col gap-6">
+      <InstallPrompt />
+      <Suspense fallback={<p className="text-sm text-zinc-500">Loading…</p>}>
+        <Home />
+      </Suspense>
+    </div>
   );
 }
