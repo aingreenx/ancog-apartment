@@ -104,28 +104,19 @@ from public.tenancies t
 cross join lateral generate_series(t.start_date, '2026-11-26'::date, interval '1 month') as m;
 
 -- Readings: move-in plus monthly readings. Each regular reading creates an electricity
--- charge with the rate in effect on the reading date (same rule as rateForReading).
+-- charge with the rate in effect on the reading date.
+-- Regular readings go through record_meter_reading(), the same function the app uses, so
+-- the demo bills are made exactly like real ones. It requires an admin, so act as admin1.
 create function pg_temp.read_meter(p_tenancy uuid, p_date date, p_kwh integer, p_kind public.reading_kind default 'regular')
 returns void language plpgsql as $$
-declare
-  v_reading_id uuid;
-  v_prev integer;
-  v_rate bigint;
 begin
-  select reading_kwh into v_prev from public.meter_readings
-  where tenancy_id = p_tenancy order by reading_date desc, created_at desc limit 1;
-
-  insert into public.meter_readings (tenancy_id, reading_date, reading_kwh, kind, created_by)
-  values (p_tenancy, p_date, p_kwh, p_kind, '11111111-0000-0000-0000-000000000001')
-  returning id into v_reading_id;
-
   if p_kind = 'regular' then
-    select rate_centavos_per_kwh into v_rate from public.rate_for_date(p_date);
-    insert into public.charges (tenancy_id, type, description, due_date, amount_centavos, meter_reading_id,
-                                prev_kwh, curr_kwh, kwh_used, rate_centavos_per_kwh, created_by)
-    values (p_tenancy, 'electricity', 'Electricity ' || to_char(p_date, 'Mon FMDD, YYYY'), p_date,
-            round((p_kwh - v_prev) * v_rate / 100.0) * 100, v_reading_id,
-            v_prev, p_kwh, p_kwh - v_prev, v_rate, '11111111-0000-0000-0000-000000000001');
+    perform set_config('request.jwt.claims', '{"sub":"11111111-0000-0000-0000-000000000001","role":"authenticated"}', true);
+    perform public.record_meter_reading(p_tenancy, p_date, p_kwh);
+    perform set_config('request.jwt.claims', '', true);
+  else
+    insert into public.meter_readings (tenancy_id, reading_date, reading_kwh, kind, created_by)
+    values (p_tenancy, p_date, p_kwh, p_kind, '11111111-0000-0000-0000-000000000001');
   end if;
 end $$;
 

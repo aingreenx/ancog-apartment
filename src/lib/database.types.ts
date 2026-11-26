@@ -525,7 +525,10 @@ isOneToOne: false
         to: "electricity_rates"
         isOneToOne: true
         isSetofReturn: false
-      } }
+      } },
+"record_meter_reading":
+{ Args: { "p_new_meter_kwh"?: number,"p_photo_path"?: string,"p_reading_date": string,"p_reading_kwh": number,"p_tenancy_id": string }; Returns: Json
+                           }
           }
           Enums: {
             "charge_type": "rent"|"electricity"|"deposit"|"custom"|"deduction","payment_method": "cash"|"gcash"|"bank"|"deposit","payment_status": "pending_review"|"confirmed"|"rejected","reading_kind": "regular"|"move_in"|"move_out"|"meter_change_old"|"meter_change_new","tenancy_status": "active"|"ended","user_role": "admin"|"tenant"
