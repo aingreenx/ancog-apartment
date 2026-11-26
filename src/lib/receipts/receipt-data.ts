@@ -57,7 +57,9 @@ export async function getReceiptData(
       .from("payment_allocations")
       .select("payment_id, charge_id, amount_centavos, payment:payments!inner(tenancy_id)")
       .eq("payment.tenancy_id", tenancyId)
-      .is("voided_at", null),
+      // Live allocations, plus this payment's own: a voided receipt keeps showing what it
+      // originally paid (its allocations were voided together with it).
+      .or(`voided_at.is.null,payment_id.eq.${payment.id}`),
     // Tenants can't read admin profiles; fall back below.
     supabase.from("profiles").select("display_name").eq("id", receipt.received_by).maybeSingle(),
     supabase.from("app_settings").select("apartment_address, receipt_signature_path").maybeSingle(),
