@@ -1,38 +1,106 @@
+# Ancog Apartment
+
 [![CI](https://github.com/aingreenx/ancog-apartment/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/aingreenx/ancog-apartment/actions/workflows/ci.yml)
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+A digital version of the paper ledger for a 13-room apartment. It's built for a real
+user: my mom, who runs the apartment and has kept every tenant's rent, electricity
+readings and payments in a notebook for years.
 
-## Getting Started
+The app does what the notebook does, without the arithmetic:
 
-First, run the development server:
+- **Admins** (2) record meter readings, payments (cash or GCash) and charges, and see
+  who owes what, from their phone or a desktop.
+- **Tenants** sign in to see their own bills, readings (with the meter photo), payments
+  and receipts, and can submit GCash payments for an admin to confirm.
+
+The full set of rules, from electricity billing and due dates to partial payments and
+move-out, is in [docs/database-design.md](docs/database-design.md).
+
+## Tech stack
+
+| Part     | Choice                               | Why                                                                                                                       |
+| -------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| App      | Next.js 16 (App Router) + TypeScript | One codebase for the admin screens and the tenant portal; server code (auth checks, money logic) stays on the server.     |
+| Styling  | Tailwind CSS 4                       | Fast to build mobile-first screens; most use will be on a phone.                                                          |
+| Database | Supabase (Postgres)                  | Real SQL for money: constraints, triggers and views keep the ledger correct even if app code has a bug.                   |
+| Auth     | Supabase Auth                        | Email/password with sessions in cookies. Admins create tenant accounts; there's no public sign-up.                        |
+| Security | Postgres row-level security          | Tenants can only ever read their own rows, enforced by the database itself rather than by each page.                      |
+| Files    | Supabase Storage                     | Meter photos, GCash payment proofs and receipt PDFs, in private buckets with the same per-tenant rules.                   |
+| Tests    | Vitest + pgTAP                       | Vitest for the billing math (checked against a real notebook page); pgTAP for the database rules and RLS.                 |
+| CI       | GitHub Actions                       | Lint, typecheck, unit tests, build, and the database tests on every push and pull request. `main` only accepts green PRs. |
+
+Money is always stored as whole centavos (`bigint`), and money rows are never edited or
+deleted, only voided with a reason, so the history is as trustworthy as the notebook.
+
+## Run it locally
+
+You need **Node.js 22+**, **Docker Desktop** (running), and Git.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/aingreenx/ancog-apartment.git
+cd ancog-apartment
+npm install
+
+npm run db:start          # starts Supabase in Docker (first run downloads images)
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Fill in `.env.local` with the `API_URL` and `ANON_KEY` that `npm run db:start` printed
+(run `npx supabase status` to see them again), then:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run dev               # http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The database starts with demo data from [supabase/seed.sql](supabase/seed.sql). Every
+name and number in it is made up. Local logins (password `password123`):
 
-## Learn More
+| Login                | Role                                  |
+| -------------------- | ------------------------------------- |
+| `admin1@ancog.local` | Admin                                 |
+| `admin2@ancog.local` | Admin                                 |
+| `room3-frannie-4612` | Tenant (room 3, the notebook numbers) |
+| `room5-bert-2231`    | Tenant (room 5, behind on payments)   |
+| `room8-carla-7780`   | Tenant (room 8, must change password) |
+| `room12-dino-5093`   | Tenant (room 12, has credit)          |
 
-To learn more about Next.js, take a look at the following resources:
+Useful extras:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Supabase Studio (browse the database): http://localhost:54323
+- `npm run db:reset`: rebuild the database from the migrations and the seed
+- `npm run db:types`: regenerate `src/lib/database.types.ts` after changing the schema
+- `npm run db:stop`: stop the Docker containers
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+> **Windows:** open the project folder with an uppercase drive letter (`D:\…`, not
+> `d:\…`). A lowercase drive letter makes Vitest load itself twice and fail.
 
-## Deploy on Vercel
+## Tests and checks
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm test                  # Vitest: billing math and login helpers
+npm run test:watch        # same, re-running on save
+npm run db:test           # pgTAP: schema rules + row-level security (needs db:start)
+npm run lint
+npm run typecheck
+npm run format            # Prettier (format:check to only check)
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+CI runs all of these on every push and pull request.
+
+## Project layout
+
+```
+src/
+  app/                    pages: /login, /change-password, /admin, /portal
+  lib/billing/            pure billing functions + tests (electricity, balances, allocation, move-out)
+  lib/auth/               login helpers, session checks, server actions
+  lib/supabase/           Supabase clients for the browser and the server
+  proxy.ts                refreshes the session and keeps signed-out users out
+supabase/
+  migrations/             the database schema and security rules
+  tests/                  pgTAP tests
+  seed.sql                demo data (fake people only)
+docs/database-design.md   business rules and tables
+```
+
+Never commit real tenant names, phone numbers or addresses.
