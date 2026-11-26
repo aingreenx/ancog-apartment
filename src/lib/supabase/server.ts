@@ -1,6 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import type { Database } from "@/lib/database.types";
 import { supabaseAnonKey, supabaseUrl } from "./env";
 
@@ -9,6 +10,9 @@ import { supabaseAnonKey, supabaseUrl } from "./env";
  * Create a new one per request; never share it between requests.
  */
 export async function createClient() {
+  // Session data is per request: never prerender it (incl. runtime prefetches, where
+  // cookies are available but the auth client's Date.now() calls would be flagged).
+  await connection();
   const cookieStore = await cookies();
 
   return createServerClient<Database>(supabaseUrl(), supabaseAnonKey(), {
