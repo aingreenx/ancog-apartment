@@ -259,17 +259,29 @@ isOneToOne: false
                   ]
                 },"payments": {
                   Row: {
-                    "amount_centavos": number,"created_at": string,"id": string,"method": Database["public"]['Enums']["payment_method"],"notes": string | null,"paid_on": string,"proof_path": string | null,"reference_no": string | null,"review_note": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"status": Database["public"]['Enums']["payment_status"],"submitted_by": string | null,"tenancy_id": string,"void_reason": string | null,"voided_at": string | null,"voided_by": string | null
+                    "amount_centavos": number,"created_at": string,"for_charge_id": string | null,"id": string,"method": Database["public"]['Enums']["payment_method"],"notes": string | null,"paid_on": string,"proof_path": string | null,"reference_no": string | null,"review_note": string | null,"reviewed_at": string | null,"reviewed_by": string | null,"status": Database["public"]['Enums']["payment_status"],"submitted_by": string | null,"tenancy_id": string,"void_reason": string | null,"voided_at": string | null,"voided_by": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "amount_centavos": number,"created_at"?: string,"id"?: string,"method": Database["public"]['Enums']["payment_method"],"notes"?: string | null,"paid_on": string,"proof_path"?: string | null,"reference_no"?: string | null,"review_note"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"submitted_by"?: string | null,"tenancy_id": string,"void_reason"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
+                    "amount_centavos": number,"created_at"?: string,"for_charge_id"?: string | null,"id"?: string,"method": Database["public"]['Enums']["payment_method"],"notes"?: string | null,"paid_on": string,"proof_path"?: string | null,"reference_no"?: string | null,"review_note"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"submitted_by"?: string | null,"tenancy_id": string,"void_reason"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
                   }
                   Update: {
-                    "amount_centavos"?: number,"created_at"?: string,"id"?: string,"method"?: Database["public"]['Enums']["payment_method"],"notes"?: string | null,"paid_on"?: string,"proof_path"?: string | null,"reference_no"?: string | null,"review_note"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"submitted_by"?: string | null,"tenancy_id"?: string,"void_reason"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
+                    "amount_centavos"?: number,"created_at"?: string,"for_charge_id"?: string | null,"id"?: string,"method"?: Database["public"]['Enums']["payment_method"],"notes"?: string | null,"paid_on"?: string,"proof_path"?: string | null,"reference_no"?: string | null,"review_note"?: string | null,"reviewed_at"?: string | null,"reviewed_by"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"submitted_by"?: string | null,"tenancy_id"?: string,"void_reason"?: string | null,"voided_at"?: string | null,"voided_by"?: string | null
                   }
                   Relationships: [
                     {
+      foreignKeyName: "payments_for_charge_id_fkey"
+      columns: ["for_charge_id"]
+isOneToOne: false
+      referencedRelation: "charge_balances"
+      referencedColumns: ["charge_id"]
+    },{
+      foreignKeyName: "payments_for_charge_id_fkey"
+      columns: ["for_charge_id"]
+isOneToOne: false
+      referencedRelation: "charges"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "payments_reviewed_by_fkey"
       columns: ["reviewed_by"]
 isOneToOne: false
@@ -510,6 +522,9 @@ isOneToOne: false
             "app_today":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"confirm_payment":
+{ Args: { "p_allocations": Json,"p_payment_id": string }; Returns: undefined
+                           },
 "due_date_in_month":
 { Args: { "p_day": string,"p_due_day": number }; Returns: string
                            },
@@ -551,6 +566,9 @@ isOneToOne: false
                            },
 "record_payment":
 { Args: { "p_allocations": Json,"p_amount_centavos": number,"p_method": Database["public"]['Enums']["payment_method"],"p_notes": string,"p_paid_on": string,"p_proof_path": string,"p_reference_no": string,"p_tenancy_id": string }; Returns: string
+                           },
+"reject_payment":
+{ Args: { "p_payment_id": string,"p_reason": string }; Returns: undefined
                            },
 "rent_period_end":
 { Args: { "p_due_day": number,"p_start": string }; Returns: string

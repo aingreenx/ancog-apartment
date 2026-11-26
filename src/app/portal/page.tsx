@@ -51,6 +51,14 @@ async function Home() {
             {formatPeso(balance.overdue)} is overdue (up to {balance.maxDaysOverdue} days).
           </p>
         )}
+        {balance.balance > 0 && (
+          <Link
+            href="/portal/pay"
+            className="mt-3 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white"
+          >
+            Pay with GCash
+          </Link>
+        )}
         {balance.balance < 0 && (
           <p className="mt-1 text-sm">You have {formatPeso(-balance.balance)} credit.</p>
         )}
@@ -87,7 +95,18 @@ async function Home() {
         ) : (
           <ul className="flex flex-col gap-3">
             {unpaid.map((b) => (
-              <BillCard key={b.id} bill={b} />
+              <BillCard
+                key={b.id}
+                bill={b}
+                action={
+                  <Link
+                    href={`/portal/pay?charge=${b.id}`}
+                    className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white"
+                  >
+                    Pay with GCash
+                  </Link>
+                }
+              />
             ))}
           </ul>
         )}

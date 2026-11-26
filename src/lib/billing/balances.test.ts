@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  allocateChosenFirst,
   allocatePayment,
   chargeBalance,
   daysBetween,
@@ -197,5 +198,35 @@ describe("daysBetween", () => {
     expect(daysBetween("2028-02-28", "2028-03-01")).toBe(2);
     expect(daysBetween("2026-12-31", "2027-01-01")).toBe(1);
     expect(daysBetween("2026-11-15", "2026-11-14")).toBe(-1);
+  });
+});
+
+describe("allocateChosenFirst", () => {
+  const charges: Charge[] = [
+    { id: "old", dueDate: "2026-10-05", amount: peso(1000) },
+    { id: "chosen", dueDate: "2026-11-05", amount: peso(3000) },
+  ];
+
+  it("pays the chosen bill first, then the oldest", () => {
+    expect(allocateChosenFirst(peso(3500), charges, [], "chosen")).toEqual({
+      allocations: [
+        { chargeId: "chosen", amount: peso(3000) },
+        { chargeId: "old", amount: peso(500) },
+      ],
+      credit: 0,
+    });
+  });
+
+  it("falls back to oldest first without a (valid) choice", () => {
+    expect(allocateChosenFirst(peso(1000), charges, [], null).allocations).toEqual([
+      { chargeId: "old", amount: peso(1000) },
+    ]);
+    expect(allocateChosenFirst(peso(1000), charges, [], "gone").allocations[0].chargeId).toBe(
+      "old",
+    );
+  });
+
+  it("keeps the rest as credit", () => {
+    expect(allocateChosenFirst(peso(4500), charges, [], "chosen").credit).toBe(peso(500));
   });
 });
