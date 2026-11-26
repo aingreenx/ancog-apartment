@@ -103,6 +103,20 @@ async function Dashboard() {
       </div>
 
       <RoomGrid rooms={data.rooms} />
+
+      <p
+        className={`text-xs ${
+          !data.lastJobRun || data.lastJobRun.error || data.lastJobRun.runDate < data.today
+            ? "text-amber-700 dark:text-amber-400"
+            : "text-zinc-500"
+        }`}
+      >
+        {data.lastJobRun
+          ? `Daily job (rent charges and reminders) last ran for ${formatDate(data.lastJobRun.runDate)}${
+              data.lastJobRun.error ? ` and failed: ${data.lastJobRun.error}` : ""
+            }.`
+          : "The daily job (rent charges and reminders) hasn't run yet. It runs at 00:05 every day."}
+      </p>
     </div>
   );
 }

@@ -115,6 +115,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"job_runs": {
+                  Row: {
+                    "error": string | null,"finished_at": string | null,"id": number,"job": string,"notifications_created": number,"rent_charges_created": number,"run_date": string,"started_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "error"?: string | null,"finished_at"?: string | null,"id"?: never,"job": string,"notifications_created"?: number,"rent_charges_created"?: number,"run_date": string,"started_at"?: string
+                  }
+                  Update: {
+                    "error"?: string | null,"finished_at"?: string | null,"id"?: never,"job"?: string,"notifications_created"?: number,"rent_charges_created"?: number,"run_date"?: string,"started_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"meter_readings": {
                   Row: {
                     "created_at": string,"created_by": string | null,"id": string,"kind": Database["public"]['Enums']["reading_kind"],"photo_path": string | null,"reading_date": string,"reading_kwh": number,"tenancy_id": string
@@ -181,14 +195,14 @@ isOneToOne: true
                   ]
                 },"notifications": {
                   Row: {
-                    "body": string | null,"created_at": string,"id": string,"link": string | null,"profile_id": string,"read_at": string | null,"title": string,"type": string
+                    "body": string | null,"created_at": string,"dedupe_key": string | null,"id": string,"link": string | null,"profile_id": string,"read_at": string | null,"title": string,"type": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "body"?: string | null,"created_at"?: string,"id"?: string,"link"?: string | null,"profile_id": string,"read_at"?: string | null,"title": string,"type": string
+                    "body"?: string | null,"created_at"?: string,"dedupe_key"?: string | null,"id"?: string,"link"?: string | null,"profile_id": string,"read_at"?: string | null,"title": string,"type": string
                   }
                   Update: {
-                    "body"?: string | null,"created_at"?: string,"id"?: string,"link"?: string | null,"profile_id"?: string,"read_at"?: string | null,"title"?: string,"type"?: string
+                    "body"?: string | null,"created_at"?: string,"dedupe_key"?: string | null,"id"?: string,"link"?: string | null,"profile_id"?: string,"read_at"?: string | null,"title"?: string,"type"?: string
                   }
                   Relationships: [
                     {
@@ -496,6 +510,9 @@ isOneToOne: false
             "app_today":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"due_date_in_month":
+{ Args: { "p_day": string,"p_due_day": number }; Returns: string
+                           },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
@@ -532,6 +549,26 @@ isOneToOne: false
 "record_payment":
 { Args: { "p_allocations": Json,"p_amount_centavos": number,"p_method": Database["public"]['Enums']["payment_method"],"p_notes": string,"p_paid_on": string,"p_proof_path": string,"p_reference_no": string,"p_tenancy_id": string }; Returns: string
                            },
+"rent_period_end":
+{ Args: { "p_due_day": number,"p_start": string }; Returns: string
+                           },
+"run_daily_billing":
+{ Args: { "p_today"?: string }; Returns: {
+              "error": string | null,
+"finished_at": string | null,
+"id": number,
+"job": string,
+"notifications_created": number,
+"rent_charges_created": number,
+"run_date": string,
+"started_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "job_runs"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "void_payment":
 { Args: { "p_payment_id": string,"p_reason": string }; Returns: undefined
                            }
