@@ -58,6 +58,7 @@ export async function sendPendingPushes(): Promise<{ sent: number; notifications
           } catch (e) {
             const status = (e as { statusCode?: number }).statusCode;
             if (status === 404 || status === 410) gone.push(s.id);
+            else console.error("Web push failed", status ?? "", (e as Error).message);
           }
         }),
     ),
