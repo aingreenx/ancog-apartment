@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Real notebook data (names, phones) never goes in the repo
+/imports/private/
