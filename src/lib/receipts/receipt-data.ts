@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { settingsImageBytes } from "@/lib/settings/files";
 import { receiptFigures, type ReceiptFigures } from "./receipt-figures";
 
 export const DEFAULT_ADDRESS = "Prk. 6, Salvacion, Davao del Norte";
@@ -66,12 +67,8 @@ export async function getReceiptData(
   ]);
   if (charges.error || payments.error || allocations.error) return null;
 
-  let signature: Uint8Array | null = null;
-  const sigPath = settings.data?.receipt_signature_path;
-  if (sigPath) {
-    const { data } = await supabase.storage.from("receipts").download(sigPath);
-    if (data) signature = new Uint8Array(await data.arrayBuffer());
-  }
+  // The reader can see this receipt (row-level security above), so they may see its signature.
+  const signature = await settingsImageBytes(settings.data?.receipt_signature_path ?? null);
 
   const voided = receipt.voided_at;
   const figures = receiptFigures(
