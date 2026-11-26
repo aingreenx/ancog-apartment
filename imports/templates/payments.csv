@@ -1,0 +1,11 @@
+tenant_key,paid_on,amount,method,reference_no,for,notes
+juana,2026-05-14,5000,cash,,,deposit + advance
+juana,2026-06-14,4500,cash,,rent:2026-06-14|electricity:2026-06-14,
+juana,2026-07-14,7520,cash,,,
+juana,2026-08-15,5983,gcash,GC-0815,,
+juana,2026-09-14,5706,cash,,,
+juana,2026-10-16,6550,gcash,GC-1016,,
+juana,2026-11-14,3000,cash,,rent:2026-11-14|electricity:2026-11-14,
+pedro,2026-08-05,7000,cash,,,
+pedro,2026-09-06,6440,cash,,,
+pedro,2026-10-10,5000,gcash,GC-1010,,

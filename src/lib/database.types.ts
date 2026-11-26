@@ -513,6 +513,9 @@ isOneToOne: false
 "due_date_in_month":
 { Args: { "p_day": string,"p_due_day": number }; Returns: string
                            },
+"import_notebook":
+{ Args: { "p": Json }; Returns: Json
+                           },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },

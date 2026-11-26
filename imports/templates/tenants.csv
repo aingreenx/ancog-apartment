@@ -1,0 +1,3 @@
+key,room,first_name,last_name,phone_1,phone_2,address,start_date,starting_kwh,monthly_rent,deposit_required,advance_required,rent_through,username,temp_password,expected_balance
+juana,3,Juana,Example,0900 000 0003,,Demo Address,2026-05-14,9433,2500,2500,2500,2026-11-14,room3-juana-0003,,445
+pedro,5,Pedro,Sample,0900 000 0005,0900 100 0005,,2026-08-05,1200,3500,3500,3500,2026-11-05,room5-pedro-0005,,8045
