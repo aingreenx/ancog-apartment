@@ -49,7 +49,9 @@ export async function getUnpaidCharges(tenancyId: string): Promise<UnpaidCharge[
     )
     .eq("tenancy_id", tenancyId)
     .gt("owed_centavos", 0)
-    .order("due_date");
+    .order("due_date")
+    // Same due date: rent, then electricity, then the rest (charge_type enum order).
+    .order("type");
   if (error) throw new Error(`Couldn't load charges: ${error.message}`);
   return data.map((c) => ({
     id: c.charge_id!,
@@ -76,7 +78,8 @@ export async function getStayOptions(): Promise<StayOption[]> {
         "charge_id, tenancy_id, type, description, due_date, amount_centavos, owed_centavos, status",
       )
       .gt("owed_centavos", 0)
-      .order("due_date"),
+      .order("due_date")
+      .order("type"),
     supabase.from("tenancy_balances").select("tenancy_id, credit_centavos"),
   ]);
   for (const r of [staysRes, chargesRes, balancesRes]) {
