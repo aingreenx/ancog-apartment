@@ -23,3 +23,35 @@ jobs:
       - run: npm ci
       - run: npx supabase db start
       - run: npm run db:test
+
+  e2e:
+    # Browser tests (Playwright, e2e/) against a production build and the local Supabase
+    # stack with its seed data.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Start Supabase (database, auth, API, storage)
+        run: npx supabase start -x realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+      - name: Point the app at local Supabase
+        run: |
+          npx supabase status -o env 2>/dev/null | grep -E '^[A-Z_]+=' > /tmp/supabase.env
+          . /tmp/supabase.env
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
+          } > .env.local
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

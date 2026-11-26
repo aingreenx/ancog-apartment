@@ -33,7 +33,7 @@ export default function PortalLayout({ children }: LayoutProps<"/portal">) {
         </div>
       </header>
 
-      <div className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-24 md:pb-10">{children}</div>
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-24 md:pb-10">{children}</main>
 
       <nav
         aria-label="Main"
