@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { UserMenu } from "@/components/user-menu";
-import { BottomNav, Icon, TopNav } from "@/components/app-nav";
-import { ADMIN_NAV, BELL_ICON } from "@/components/nav-items";
+import { BottomNav, TopNav } from "@/components/app-nav";
+import { ADMIN_NAV } from "@/components/nav-items";
+import { NotificationBell } from "@/components/notifications";
 
 // Shared shell for every /admin page. It holds no auth logic: each page calls
 // requireUser("admin") itself, because layouts don't re-run on navigation.
@@ -20,16 +21,9 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
             </Suspense>
           </nav>
           <div className="ml-auto flex items-center gap-1 md:ml-0">
-            {/* Placeholder until notifications (#24). */}
-            <button
-              type="button"
-              disabled
-              aria-label="Notifications (coming soon)"
-              title="Notifications (coming soon)"
-              className="rounded-full p-2 text-zinc-500 disabled:cursor-not-allowed"
-            >
-              <Icon d={BELL_ICON} />
-            </button>
+            <Suspense fallback={<span className="h-9 w-9" />}>
+              <NotificationBell />
+            </Suspense>
             <Suspense
               fallback={<span className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-800" />}
             >

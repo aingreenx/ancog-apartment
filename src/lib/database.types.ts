@@ -195,14 +195,14 @@ isOneToOne: true
                   ]
                 },"notifications": {
                   Row: {
-                    "body": string | null,"created_at": string,"dedupe_key": string | null,"id": string,"link": string | null,"profile_id": string,"read_at": string | null,"title": string,"type": string
+                    "body": string | null,"created_at": string,"dedupe_key": string | null,"id": string,"link": string | null,"profile_id": string,"pushed_at": string | null,"read_at": string | null,"title": string,"type": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "body"?: string | null,"created_at"?: string,"dedupe_key"?: string | null,"id"?: string,"link"?: string | null,"profile_id": string,"read_at"?: string | null,"title": string,"type": string
+                    "body"?: string | null,"created_at"?: string,"dedupe_key"?: string | null,"id"?: string,"link"?: string | null,"profile_id": string,"pushed_at"?: string | null,"read_at"?: string | null,"title": string,"type": string
                   }
                   Update: {
-                    "body"?: string | null,"created_at"?: string,"dedupe_key"?: string | null,"id"?: string,"link"?: string | null,"profile_id"?: string,"read_at"?: string | null,"title"?: string,"type"?: string
+                    "body"?: string | null,"created_at"?: string,"dedupe_key"?: string | null,"id"?: string,"link"?: string | null,"profile_id"?: string,"pushed_at"?: string | null,"read_at"?: string | null,"title"?: string,"type"?: string
                   }
                   Relationships: [
                     {
@@ -545,6 +545,9 @@ isOneToOne: false
                            },
 "my_tenant_id":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"notify_overdue_summary":
+{ Args: { "p_today"?: string }; Returns: number
                            },
 "rate_for_date":
 { Args: { "p_date": string }; Returns: {

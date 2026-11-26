@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { BottomNav, Icon, TopNav } from "@/components/app-nav";
-import { BELL_ICON, PORTAL_NAV } from "@/components/nav-items";
+import { BottomNav, TopNav } from "@/components/app-nav";
+import { PORTAL_NAV } from "@/components/nav-items";
+import { NotificationBell } from "@/components/notifications";
 import { UserMenu } from "@/components/user-menu";
 
 // Phone-first shell for tenants. Like /admin, it holds no auth logic: every page calls
@@ -20,15 +21,9 @@ export default function PortalLayout({ children }: LayoutProps<"/portal">) {
             </Suspense>
           </nav>
           <div className="ml-auto flex items-center gap-1 md:ml-0">
-            {/* Placeholder until notifications (#24). */}
-            <button
-              type="button"
-              disabled
-              aria-label="Notifications (coming soon)"
-              className="rounded-full p-2 text-zinc-500 disabled:cursor-not-allowed"
-            >
-              <Icon d={BELL_ICON} />
-            </button>
+            <Suspense fallback={<span className="h-9 w-9" />}>
+              <NotificationBell />
+            </Suspense>
             <Suspense
               fallback={<span className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-800" />}
             >

@@ -1,6 +1,8 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { after } from "next/server";
+import { sendPendingPushes } from "@/lib/notifications/push";
 import { requireUser } from "@/lib/auth/dal";
 import { parsePesos, todayInManila } from "@/lib/money";
 import { getMyStay } from "@/lib/portal/data";
@@ -54,6 +56,7 @@ export async function submitGcashPayment(form: FormData): Promise<SubmitResult> 
     if (proofPath) await supabase.storage.from("payment-proofs").remove([proofPath]);
     return { ok: false, error: "Couldn't send it. Please try again." };
   }
+  after(() => sendPendingPushes().catch(() => null));
   refresh();
   return { ok: true };
 }
