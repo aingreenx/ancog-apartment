@@ -1,6 +1,10 @@
 -- Schema rules (money, readings, voids, balances). Run with: npm run db:test
 begin;
 create extension if not exists pgtap with schema extensions;
+
+-- Start from an empty database (the seed may be loaded). TRUNCATE skips the
+-- no-delete triggers, and everything is rolled back at the end anyway.
+truncate public.profiles, public.rooms, public.tenants, public.electricity_rates, public.audit_log cascade;
 select no_plan();
 create temp table r (test text, ok boolean);
 create function pg_temp.expect_fail(name text, stmt text) returns void language plpgsql as $f$

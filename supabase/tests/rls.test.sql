@@ -1,6 +1,10 @@
 -- Row-level security tests. Run with: npm run db:test (npx supabase test db)
 begin;
 create extension if not exists pgtap with schema extensions;
+
+-- Start from an empty database (the seed may be loaded). TRUNCATE skips the
+-- no-delete triggers, and everything is rolled back at the end anyway.
+truncate public.profiles, public.rooms, public.tenants, public.electricity_rates, public.audit_log cascade;
 select plan(28);
 
 -- ---------------------------------------------------------------------------
