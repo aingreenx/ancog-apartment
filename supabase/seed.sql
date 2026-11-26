@@ -221,7 +221,7 @@ select pg_temp.pay('44444444-0000-0000-0000-000000000012', '2026-11-01', 'cash',
 -- Settings and a notification
 -- ---------------------------------------------------------------------------
 update public.app_settings
-set gcash_name = 'DEMO ACCOUNT', gcash_number = '0900 000 0000', apartment_address = 'Demo Apartment, Demo City';
+set gcash_name = 'DEMO ACCOUNT', gcash_number = '0900 000 0000', apartment_address = 'Prk. 6, Salvacion, Davao del Norte';
 
 insert into public.notifications (profile_id, type, title, body, link) values
   ('22222222-0000-0000-0000-000000000005', 'overdue', 'Rent is overdue', 'Your November rent is overdue.', '/portal');

@@ -5,10 +5,11 @@ import { requireUser } from "@/lib/auth/dal";
 import { getUnpaidCharges } from "@/lib/admin/payments";
 import { allocatePayment } from "@/lib/billing/balances";
 import { parsePesos } from "@/lib/money";
+import { receiptNoForPayment, storeReceiptPdf } from "@/lib/receipts/store";
 import { createClient } from "@/lib/supabase/server";
 
 export type RecordPaymentResult =
-  | { ok: true; paymentId: string; allocated: number; credit: number }
+  | { ok: true; paymentId: string; allocated: number; credit: number; receiptNo: number | null }
   | { ok: false; error: string; field?: "amount" | "date" | "method" | "pick" | "proof" };
 
 const METHODS = ["cash", "gcash", "bank"] as const;
@@ -74,8 +75,19 @@ export async function recordPayment(formData: FormData): Promise<RecordPaymentRe
     return { ok: false, error: "Couldn't save the payment. Nothing was saved; please try again." };
   }
 
+  // The receipt row is created by the database; render and store its PDF now. A failure
+  // here doesn't undo the payment: the PDF is rendered again whenever it is opened.
+  const receiptNo = await receiptNoForPayment(supabase, data);
+  if (receiptNo) await storeReceiptPdf(supabase, receiptNo).catch(() => null);
+
   refresh();
-  return { ok: true, paymentId: data, allocated: amount - plan.credit, credit: plan.credit };
+  return {
+    ok: true,
+    paymentId: data,
+    allocated: amount - plan.credit,
+    credit: plan.credit,
+    receiptNo,
+  };
 }
 
 export type VoidState =
@@ -98,6 +110,9 @@ export async function voidPayment(_prev: VoidState, formData: FormData): Promise
       error: /already void/.test(error.message) ? "Already void." : "Couldn't void the payment.",
     };
   }
+  // Re-store the receipt PDF so the kept copy says VOID too.
+  const receiptNo = await receiptNoForPayment(supabase, paymentId);
+  if (receiptNo) await storeReceiptPdf(supabase, receiptNo).catch(() => null);
   refresh();
   return { status: "done" };
 }

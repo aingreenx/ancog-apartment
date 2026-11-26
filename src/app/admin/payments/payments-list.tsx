@@ -42,6 +42,25 @@ export function PaymentsList({
               <p className={`font-medium tabular-nums ${p.voidedAt ? "line-through" : ""}`}>
                 {formatPeso(p.amount)}
               </p>
+              {p.receiptNo && (
+                <span className="block text-xs">
+                  <a
+                    href={`/receipts/${p.receiptNo}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline underline-offset-4"
+                  >
+                    Receipt #{p.receiptNo}
+                  </a>{" "}
+                  ·{" "}
+                  <a
+                    href={`/receipts/${p.receiptNo}?download=1`}
+                    className="underline underline-offset-4"
+                  >
+                    PDF
+                  </a>
+                </span>
+              )}
               {!p.voidedAt && <VoidPayment paymentId={p.id} />}
             </div>
           </div>
