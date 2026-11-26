@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { AdminMenu } from "./_components/admin-menu";
-import { BottomNav, Icon, TopNav } from "./_components/nav-links";
+import { UserMenu } from "@/components/user-menu";
+import { BottomNav, Icon, TopNav } from "@/components/app-nav";
+import { ADMIN_NAV, BELL_ICON } from "@/components/nav-items";
 
 // Shared shell for every /admin page. It holds no auth logic: each page calls
 // requireUser("admin") itself, because layouts don't re-run on navigation.
@@ -15,7 +16,7 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
           </Link>
           <nav aria-label="Main" className="hidden flex-1 md:block">
             <Suspense fallback={null}>
-              <TopNav />
+              <TopNav items={ADMIN_NAV} />
             </Suspense>
           </nav>
           <div className="ml-auto flex items-center gap-1 md:ml-0">
@@ -27,12 +28,12 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
               title="Notifications (coming soon)"
               className="rounded-full p-2 text-zinc-500 disabled:cursor-not-allowed"
             >
-              <Icon d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
+              <Icon d={BELL_ICON} />
             </button>
             <Suspense
               fallback={<span className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-800" />}
             >
-              <AdminMenu />
+              <UserMenu />
             </Suspense>
           </div>
         </div>
@@ -45,7 +46,7 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
         className="fixed inset-x-0 bottom-0 z-10 border-t border-zinc-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden dark:border-zinc-800 dark:bg-zinc-950"
       >
         <Suspense fallback={null}>
-          <BottomNav />
+          <BottomNav items={ADMIN_NAV} />
         </Suspense>
       </nav>
     </div>

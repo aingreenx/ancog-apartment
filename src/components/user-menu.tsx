@@ -3,7 +3,7 @@ import { getSessionUser } from "@/lib/auth/dal";
 import { signOut } from "@/lib/auth/actions";
 
 /** Avatar + dropdown. No client JS: it's a <details> element. */
-export async function AdminMenu() {
+export async function UserMenu() {
   const user = await getSessionUser();
   if (!user) return null;
   const initials = user.displayName
@@ -16,7 +16,7 @@ export async function AdminMenu() {
   return (
     <details className="relative">
       <summary
-        aria-label="Admin menu"
+        aria-label="Account menu"
         className="flex cursor-pointer list-none items-center gap-2 rounded-full p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 [&::-webkit-details-marker]:hidden"
       >
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-xs font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900">
@@ -26,7 +26,9 @@ export async function AdminMenu() {
       </summary>
       <div className="absolute right-0 z-20 mt-2 w-56 rounded-lg border border-zinc-200 bg-white p-2 shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
         <p className="px-2 py-1 text-sm font-medium">{user.displayName}</p>
-        <p className="px-2 pb-2 text-xs text-zinc-500">{user.username} · Admin</p>
+        <p className="px-2 pb-2 text-xs text-zinc-500">
+          {user.username} · {user.role === "admin" ? "Admin" : "Tenant"}
+        </p>
         <Link
           href="/change-password"
           className="block rounded-md px-2 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
