@@ -1,0 +1,11 @@
+// Types for the service worker (src/app/sw.ts): worker globals, no DOM.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["esnext", "webworker"],
+    "incremental": false,
+    "plugins": []
+  },
+  "include": ["src/app/sw.ts"],
+  "exclude": ["node_modules"]
+}
