@@ -496,6 +496,18 @@ isOneToOne: false
             "app_today":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"is_admin":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"mark_password_changed":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"my_tenancy_ids":
+{ Args: Record<PropertyKey, never>; Returns: string[]
+                           },
+"my_tenant_id":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
 "rate_for_date":
 { Args: { "p_date": string }; Returns: {
               "created_at": string,
