@@ -18,10 +18,21 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
   );
 }
 
-function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+function Panel({
+  title,
+  action,
+  children,
+}: {
+  title: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <section className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-      <h2 className="mb-2 font-semibold">{title}</h2>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <h2 className="font-semibold">{title}</h2>
+        {action}
+      </div>
       {children}
     </section>
   );
@@ -80,7 +91,19 @@ async function Dashboard() {
           )}
         </Panel>
 
-        <Panel title={`Payments to review (${data.paymentsToReview.length})`}>
+        <Panel
+          title={`Payments to review (${data.paymentsToReview.length})`}
+          action={
+            data.paymentsToReview.length > 0 && (
+              <Link
+                href="/admin/payments/review"
+                className="text-sm font-medium underline underline-offset-4"
+              >
+                Review
+              </Link>
+            )
+          }
+        >
           {data.paymentsToReview.length === 0 ? (
             <p className="text-sm text-zinc-500">Nothing to review.</p>
           ) : (

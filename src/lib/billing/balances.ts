@@ -201,3 +201,20 @@ export function settleMoveOut({
     remainingOwed: deductions + unpaid - used,
   };
 }
+
+/**
+ * A tenant's GCash payment for a specific bill: that bill first, then whatever else is
+ * owed (oldest first). Anything left over is credit.
+ */
+export function allocateChosenFirst(
+  amount: Centavos,
+  charges: Charge[],
+  allocations: Allocation[],
+  chosenId: string | null,
+): AllocationPlan {
+  const chosen = chosenId && charges.some((c) => c.id === chosenId && !c.voided) ? chosenId : null;
+  if (!chosen) return allocatePayment(amount, charges, allocations);
+  const first = allocatePayment(amount, charges, allocations, { pick: [chosen] });
+  const rest = allocatePayment(first.credit, charges, [...allocations, ...first.allocations]);
+  return { allocations: [...first.allocations, ...rest.allocations], credit: rest.credit };
+}

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { requireUser } from "@/lib/auth/dal";
 import { getMyBills, getMyStay } from "@/lib/portal/data";
@@ -14,7 +15,18 @@ async function Bills() {
   return (
     <ul className="flex flex-col gap-3">
       {bills.map((b) => (
-        <BillCard key={b.id} bill={b} />
+        <BillCard
+          key={b.id}
+          bill={b}
+          action={
+            <Link
+              href={`/portal/pay?charge=${b.id}`}
+              className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white"
+            >
+              Pay with GCash
+            </Link>
+          }
+        />
       ))}
     </ul>
   );
