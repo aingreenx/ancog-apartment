@@ -10,7 +10,7 @@ import { NotificationBell } from "@/components/notifications";
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div className="flex flex-1 flex-col">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
+      <header className="sticky top-0 z-10 border-b print:hidden border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
           <Link href="/admin" className="font-semibold tracking-tight">
             Ancog Apartment
@@ -37,7 +37,7 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
 
       <nav
         aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-10 border-t border-zinc-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden dark:border-zinc-800 dark:bg-zinc-950"
+        className="fixed inset-x-0 bottom-0 z-10 border-t print:hidden border-zinc-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden dark:border-zinc-800 dark:bg-zinc-950"
       >
         <Suspense fallback={null}>
           <BottomNav items={ADMIN_NAV} />

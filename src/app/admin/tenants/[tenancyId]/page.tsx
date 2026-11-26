@@ -90,15 +90,14 @@ async function Tenant({ params }: { params: Promise<{ tenancyId: string }> }) {
           <a href="#charges" className={secondaryButtonClass}>
             Add charge
           </a>
-          {active && (
-            <button
-              type="button"
-              disabled
-              title="Coming with move-out settlement (#25)"
-              className={`${secondaryButtonClass} cursor-not-allowed opacity-50`}
-            >
+          {active ? (
+            <Link href={`/admin/tenants/${stay.id}/move-out`} className={secondaryButtonClass}>
               Move out
-            </button>
+            </Link>
+          ) : (
+            <Link href={`/admin/tenants/${stay.id}/settlement`} className={secondaryButtonClass}>
+              Settlement
+            </Link>
           )}
         </div>
       </div>
