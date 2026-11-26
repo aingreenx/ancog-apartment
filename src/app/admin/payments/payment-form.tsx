@@ -86,6 +86,19 @@ export function PaymentForm({
         >
           Payment saved: {formatPeso(result.allocated)} applied to charges
           {result.credit > 0 && `, ${formatPeso(result.credit)} kept as credit`}.
+          {result.receiptNo && (
+            <>
+              {" "}
+              <a
+                href={`/receipts/${result.receiptNo}`}
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium underline underline-offset-4"
+              >
+                Receipt #{result.receiptNo}
+              </a>
+            </>
+          )}
         </p>
       )}
       {result && !result.ok && !result.field && <FormError message={result.error} />}
