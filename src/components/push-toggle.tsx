@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { removePushSubscription, savePushSubscription } from "@/lib/notifications/actions";
+import { isIos, isStandalone, registerServiceWorker } from "@/lib/pwa/service-worker";
 import { secondaryButtonClass, buttonClass } from "./form";
 
 type State = "loading" | "unsupported" | "ios-home-screen" | "denied" | "off" | "on";
@@ -21,16 +22,14 @@ export function PushToggle({ publicKey }: { publicKey: string | null }) {
 
   useEffect(() => {
     (async () => {
-      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const standalone =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        (navigator as Navigator & { standalone?: boolean }).standalone === true;
+      const ios = isIos();
+      const standalone = isStandalone();
       if (!("serviceWorker" in navigator) || !("PushManager" in window) || !publicKey) {
         setState(ios && !standalone ? "ios-home-screen" : "unsupported");
         return;
       }
       if (Notification.permission === "denied") return setState("denied");
-      const reg = await navigator.serviceWorker.register("/sw.js");
+      const reg = await registerServiceWorker();
       const sub = await reg.pushManager.getSubscription();
       setState(sub ? "on" : "off");
     })().catch(() => setState("unsupported"));
@@ -41,7 +40,7 @@ export function PushToggle({ publicKey }: { publicKey: string | null }) {
     try {
       const permission = await Notification.requestPermission();
       if (permission !== "granted") return setState(permission === "denied" ? "denied" : "off");
-      const reg = await navigator.serviceWorker.register("/sw.js");
+      const reg = await registerServiceWorker();
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey!),
@@ -57,7 +56,7 @@ export function PushToggle({ publicKey }: { publicKey: string | null }) {
   async function turnOff() {
     setBusy(true);
     try {
-      const reg = await navigator.serviceWorker.getRegistration("/sw.js");
+      const reg = await navigator.serviceWorker.getRegistration("/");
       const sub = await reg?.pushManager.getSubscription();
       if (sub) {
         await removePushSubscription(sub.endpoint);

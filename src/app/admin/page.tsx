@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { InstallPrompt } from "@/components/install-prompt";
 import { requireUser } from "@/lib/auth/dal";
 import { getDashboard } from "@/lib/admin/dashboard";
 import { formatDate, formatPeso } from "@/lib/money";
@@ -48,6 +49,7 @@ async function Dashboard() {
   return (
     <div className="flex flex-col gap-6">
       <p className="-mt-4 text-sm text-zinc-500">{formatDate(data.today)}</p>
+      <InstallPrompt />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat

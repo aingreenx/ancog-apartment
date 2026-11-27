@@ -43,3 +43,9 @@ next-env.d.ts
 
 # Real notebook data (names, phones) never goes in the repo
 /imports/private/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
