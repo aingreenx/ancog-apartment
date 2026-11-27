@@ -117,6 +117,7 @@ supabase/
   seed.sql                demo data (fake people only)
 e2e/                      Playwright browser tests
 docs/database-design.md   business rules and tables
+docs/deploy.md            going live: hosting, production database, backups
 ```
 
 Never commit real tenant names, phone numbers or addresses.
